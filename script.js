@@ -1,10 +1,13 @@
+
 var baza
 const btn = document.getElementById('generateButton')
+const btnConvert = document.getElementById('convertButton')
 const input = document.getElementById('userInput')
 const answer = document.getElementById('answer')
 const complete = document.getElementById('complete')
 const dataCompleted = `<h1>Data Succesfully Loaded<h1>`
-
+const converted = document.getElementById('converted')
+let newBaza = []
 
 async function fetchData() {
     try {
@@ -59,6 +62,27 @@ function showAnswer(ids){
  answer.innerHTML = text
 }
 
+async function selectB(){
+  let newData = await fetchData()
+  newData.pytania.forEach(element => {
+      let checkForB = element['Kategorie'].split(',')
+      // console.log('checkForB ' + checkForB)
+   let filteredB = checkForB.filter((word) => word === 'B')
+  //  console.log('filteredB ' + filteredB)
+  filteredB.length > 0 ? newBaza.push(element) : null
+  })
+  console.log('selectB done')
+  return true
+}
+
+async function converter(){
+  console.log('conversion running')
+  let sorted = await selectB()
+  if (sorted){
+      console.log('sorted done')
+  }
+  return true
+}
 
   btn.addEventListener('click', ()=> {
     console.log('input '+input.value)
@@ -68,3 +92,28 @@ function showAnswer(ids){
       showAnswer(ids)
     }
   })
+
+
+  btnConvert.addEventListener('click',async ()=> {
+    const elementy = ["Lp.", "Numer pytania", "Pytanie", "Poprawna odp", "Media", "Nazwa media tłumaczenie migowe (PJM) treść płyt", "Kategorie", "Pytanie [ENG]", "Pytanie [DE]", "Pytanie [UA]"]
+    let text
+    let show
+    let done = await converter()
+    if (done){
+        show = newBaza
+    console.log('should show ' + show[0]['Kategorie'])
+    show.forEach(element => {
+      let p = ""
+      for (let i = 1; i < elementy.length; i++){
+         p += `<p>"${elementy[i]}":"${element[elementy[i]]}",</p>`
+      }
+
+     text += `<div>"Q${element["Lp."]}":{${p}},<br></div>`
+    })
+    converted.innerHTML = `{${text}}`
+    } else {
+      console.log('too short time')
+    }
+  
+  })
+

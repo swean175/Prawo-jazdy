@@ -84,6 +84,7 @@ async function converter(){
   return true
 }
 
+
   btn.addEventListener('click', ()=> {
     console.log('input '+input.value)
     let ids 
@@ -98,17 +99,32 @@ async function converter(){
     const elementy = ["Lp.", "Numer pytania", "Pytanie", "Poprawna odp", "Media", "Nazwa media tłumaczenie migowe (PJM) treść płyt", "Kategorie", "Pytanie [ENG]", "Pytanie [DE]", "Pytanie [UA]"]
     let text
     let show
+    let original
+    let modified
+    let numberOfQuaestions = 0
     let done = await converter()
     if (done){
         show = newBaza
     console.log('should show ' + show[0]['Kategorie'])
     show.forEach(element => {
+      numberOfQuaestions += 1
       let p = ""
       for (let i = 1; i < elementy.length; i++){
-         p += `<p>"${elementy[i]}":"${element[elementy[i]]}",</p>`
+    original = element[elementy[i]]
+    if (original != undefined){
+     if (original.includes('"')) {
+      console.log('szhould replace')
+        modified = original.replace(/"/g, "'")
+      } else {
+        modified = original
+      }
+    }
+ 
+
+         p += `<p>"${elementy[i]}":"${modified}"${i === 9 ? "" : ','}</p>`
       }
 
-     text += `<div>"Q${element["Lp."]}":{${p}},<br></div>`
+     text += `<div>"q${numberOfQuaestions}":{${p}},</div>`
     })
     converted.innerHTML = `{${text}}`
     } else {

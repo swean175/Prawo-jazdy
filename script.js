@@ -1,13 +1,18 @@
 
 var baza
 const btn = document.getElementById('generateButton')
-const btnConvert = document.getElementById('convertButton')
-const input = document.getElementById('userInput')
+const next = document.getElementById('next')
 const answer = document.getElementById('answer')
 const complete = document.getElementById('complete')
 const dataCompleted = `<h1>Data Succesfully Loaded<h1>`
 const converted = document.getElementById('converted')
+const lang = document.getElementById('lang')
 let newBaza = []
+let displayedQuestions = []
+let displayed = 0
+let text = ""
+let language = "pl"
+console.log(language)
 
 async function fetchData() {
     try {
@@ -19,16 +24,38 @@ async function fetchData() {
       return null;
     } finally {
       console.log('Finished fetching data');
-     complete.innerHTML = dataCompleted
+      complete.innerHTML = dataCompleted
     }
   }
 
   fetchData()
 
+
+  lang.addEventListener('change', ()=> {
+    language = lang.value
+  })
+  
+  next.addEventListener('click', ()=> {
+    singleQuestion()
+  })
+  
+  
+  btn.addEventListener('click', ()=> {
+     singleQuestion()
+  })
+
+  window.document.addEventListener('click', (e)=>{
+    if (e.target) {
+        console.log('choosen = '+e.target.data-choice.value)
+    } else {
+      console.log('not choice')
+    }
+  })
+
   function randomQuestions(num) {
     const uniqueNumbers = [];
     while (uniqueNumbers.length < num) {
-      const randomNumber = Math.floor(Math.random() * 2001);
+      const randomNumber = Math.floor(Math.random() * 2052);
       if (!uniqueNumbers.includes(randomNumber)) {
         uniqueNumbers.push(randomNumber);
       }
@@ -38,98 +65,74 @@ async function fetchData() {
 
 function showAnswer(ids){
     const idArray = ids
-    let style
-    let text = ""
-    for (let i = 0; i < idArray.length; i++){
-        if (i % 2 === 0) {
-            style =  "class='even'";
-          } else {
-            style =  "class='odd'";
-          }
-        text += `<div id='pytanko' ${style}> 
-        <p> Lp = ${baza.pytania[idArray[i]]['Lp.']}</p> 
-         <p> Numer Pyania = ${baza.pytania[idArray[i]]['Numer pytania']}</p> 
-          <p> Pytanie = ${baza.pytania[idArray[i]]['Pytanie']}</p> 
-           <p> Poprawna Odpowiedz = ${baza.pytania[idArray[i]]['Poprawna odp']}</p> 
-            <p> Media = ${baza.pytania[idArray[i]]['Media']}</p> 
-             <p> Kategorie = ${baza.pytania[idArray[i]]['Kategorie']}</p> 
-              <p> Pytanie [ENG] = ${baza.pytania[idArray[i]]['Pytanie [ENG]']}</p> 
-               <p> Pytanie [DE] = ${baza.pytania[idArray[i]]['Pytanie [DE]']}</p> 
-                <p> Pytanie [UA] = ${baza.pytania[idArray[i]]['Pytanie [UA]']}</p> 
-        </div>`
-        console.log(baza.pytania[idArray[i]])
-    }
- answer.innerHTML = text
-}
-
-async function selectB(){
-  let newData = await fetchData()
-  newData.pytania.forEach(element => {
-      let checkForB = element['Kategorie'].split(',')
-      // console.log('checkForB ' + checkForB)
-   let filteredB = checkForB.filter((word) => word === 'B')
-  //  console.log('filteredB ' + filteredB)
-  filteredB.length > 0 ? newBaza.push(element) : null
-  })
-  console.log('selectB done')
-  return true
-}
-
-async function converter(){
-  console.log('conversion running')
-  let sorted = await selectB()
-  if (sorted){
-      console.log('sorted done')
-  }
-  return true
-}
+    let translationQ = ""
+    let translationA = ""
+    let translationB = ""
+    let translationC = ""
 
 
-  btn.addEventListener('click', ()=> {
-    console.log('input '+input.value)
-    let ids 
-    if (input.value){
-      ids = randomQuestions(input.value)
-      showAnswer(ids)
-    }
-  })
-
-
-  btnConvert.addEventListener('click',async ()=> {
-    const elementy = ["Lp.", "Numer pytania", "Pytanie", "Poprawna odp", "Media", "Nazwa media tłumaczenie migowe (PJM) treść płyt", "Kategorie", "Pytanie [ENG]", "Pytanie [DE]", "Pytanie [UA]"]
-    let text
-    let show
-    let original
-    let modified
-    let numberOfQuaestions = 0
-    let done = await converter()
-    if (done){
-        show = newBaza
-    console.log('should show ' + show[0]['Kategorie'])
-    show.forEach(element => {
-      numberOfQuaestions += 1
-      let p = ""
-      for (let i = 1; i < elementy.length; i++){
-    original = element[elementy[i]]
-    if (original != undefined){
-     if (original.includes('"')) {
-      console.log('szhould replace')
-        modified = original.replace(/"/g, "'")
-      } else {
-        modified = original
-      }
-    }
- 
-
-         p += `<p>"${elementy[i]}":"${modified}"${i === 9 ? "" : ','}</p>`
-      }
-
-     text += `<div>"q${numberOfQuaestions}":{${p}},</div>`
-    })
-    converted.innerHTML = `{${text}}`
-    } else {
-      console.log('too short time')
+    switch (language) {
+      case 'pl':
+        translationQ = ` Pytanie :<p> ${baza["q"+idArray[displayed]]['Pytanie']}</p> `;
+        translationA = ` A :<button class='answer' id='choosen' data-choice='A'> ${baza["q"+idArray[displayed]]['Odpowiedź A']}</button> `;
+        translationB = ` B :<button class='answer' id='choosen' data-choice='B'> ${baza["q"+idArray[displayed]]['Odpowiedź B']}</button> `;
+        translationC = ` C :<button class='answer' id='choosen' data-choice='C'> ${baza["q"+idArray[displayed]]['Odpowiedź C']}</button> `;
+      break;
+      case 'en':
+        translationQ = ` Questtion :<p> ${baza["q"+idArray[displayed]]['Pytanie [ENG]']}</p> `;
+        translationA = ` A :<button class='answer' id='choosen' data-choice='A'> ${baza["q"+idArray[displayed]]['Odpowiedź A [ENG]']}</button> `;
+        translationB = ` B :<button class='answer' id='choosen' data-choice='B'> ${baza["q"+idArray[displayed]]['Odpowiedź B [ENG]']}</button> `;
+        translationC = ` C :<button class='answer' id='choosen' data-choice='C'> ${baza["q"+idArray[displayed]]['Odpowiedź C [ENG]']}</button> `;
+      break;
+      case 'de':
+        translationQ = ` Frage : <p>${baza["q"+idArray[displayed]]['Pytanie [DE]']}</p> `;
+        translationA = ` A :<button class='answer' id='choosen' data-choice='A'> ${baza["q"+idArray[displayed]]['Odpowiedź A [DE]']}</button> `;
+        translationB = ` B :<button class='answer' id='choosen' data-choice='B'> ${baza["q"+idArray[displayed]]['Odpowiedź B [DE]']}</button> `;
+        translationC = ` C :<button class='answer' id='choosen' data-choice='C'> ${baza["q"+idArray[displayed]]['Odpowiedź C [DE]']}</button> `;
+        break;
+        case 'ua':
+        translationQ = ` запитання :<p> ${baza["q"+idArray[displayed]]['Pytanie [UA]']}</p>  `;
+        translationA = ` A :<button class='answer' id='choosen' data-choice='A'> ${baza["q"+idArray[displayed]]['Odpowiedź A [UA]']}</button> `;
+        translationB = ` B :<button class='answer' id='choosen' data-choice='B'> ${baza["q"+idArray[displayed]]['Odpowiedź B [UA]']}</button> `;
+        translationC = ` C :<button class='answer' id='choosen' data-choice='C'> ${baza["q"+idArray[displayed]]['Odpowiedź C [UA]']}</button> `;
+        break;
+      default:
+        translationQ = ` Pytanie :<p> ${baza["q"+idArray[displayed]]['Pytanie']}</p> `;
     }
   
-  })
+    text = `<div id='pytanko'> 
+            <p> Numer Pyania = ${baza["q"+ids[displayed]]['Numer pytania']}</p> 
+            ${translationQ}
+            <p> Media = ${baza["q"+ids[displayed]]['Media']}</p> 
+            <div class = 'media'><img class='img' src = './media/exmp.jpg'></div>
+            ${translationA+translationB+translationC}</div>`
+    console.log(baza["q"+ids[displayed]])
+    displayedQuestions.push(baza["q"+ids[displayed]])
+    render()
+    }
 
+
+function singleQuestion(){
+  btn.style = "display: none"
+  next.className = "next"
+  let ids = []
+  displayed += 1
+  ids = randomQuestions(32)
+  showAnswer(ids)
+}
+
+
+  function results(){
+    //<p> Poprawna Odpowiedz = ${baza["q"+ids[displayed]]['Poprawna odp']}</p> 
+    //      <p> Kategorie = ${baza["q"+ids[displayed]]['Kategorie']}</p> 
+    btn.innerText = 'Rozpocznij następny'
+  }
+
+function render(){
+  if (displayed < 33){
+    answer.innerHTML = text
+} else {
+  results()
+  answer.innerHTML = text
+}
+}

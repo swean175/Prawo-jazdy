@@ -6,3 +6,21 @@
 .even{
     background-color: antiquewhite;
 }
+
+.hidden{
+    visibility: hidden;
+}
+
+.next{
+    display:block;
+    visibility: visible;
+}
+
+.media{
+    width: 90%;
+}
+
+.img{
+    aspect-ratio: 16 /9;
+    width: 90%;
+}

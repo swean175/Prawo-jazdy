@@ -6,13 +6,19 @@
 </head>
 <body>
 <div id="complete"></div>
-<h2>Input number from one to 2000</h2>
-  <input type="text" id="userInput">
-  <button id="generateButton">Random</button>
-  <button id="convertButton">Convert</button>
+<label for="lang">Choose a language:
+<select name="language" id="lang">
+  <option value="pl">Polski</option>
+  <option value="en">English</option>
+  <option value="de">Deutsch</option>
+  <option value="ua">Українська</option>
+</select>
+</label>
+  <button id="generateButton">Zacznij test</button>
+  <!-- <button id="convertButton">Convert</button> -->
 
   <div id="answer"></div>
-  <div id="converted"></div>
-  <script src="script.js"></script></script>
+  <p> <button id = 'next' class = 'hidden'>Następne </button></p>
+  <script src="script.js"></script>
 </body>
 </html>

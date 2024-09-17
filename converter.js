@@ -1,8 +1,10 @@
 var baza
 const btnConvert = document.getElementById('convertButton')
+const showMedia = document.getElementById('showOnlyMedia')
 const answer = document.getElementById('answer')
 const converted = document.getElementById('converted')
 let newBaza = []
+let mediaArray = []
     
 async function fetchData() {
     try {
@@ -18,6 +20,7 @@ async function fetchData() {
   }
 
   fetchData()
+
 
 async function selectB(){
   let newData = await fetchData()
@@ -64,29 +67,35 @@ btnConvert.addEventListener('click',async ()=> {
         if (element['Poprawna odp'].includes('Tak') || element['Poprawna odp'].includes('Nie')){ 
           for (let i = 1; i < elementyTakNie.length; i++){
              original = element[elementyTakNie[i]] 
-            if (original != undefined){
-            if (original.includes('"')) {
-                console.log('should replace')
-                modified = original.replace(/"/g, "'")
-                } else {
-                modified = original
-                }
-                p += `<p>"${elementyTakNie[i]}":"${modified}"${i === (elementyTakNie.length-1) ? "" : ','}</p>`
+            if (element[elementyTakNie[i]] != undefined && element[elementyTakNie[i]] !== ""){
+                  if(elementyTakNie[i]  === "Media"){
+                    mediaArray.push(element[elementyTakNie[i]])
+                  }
+                if (original.includes('"')) {
+                    console.log('should replace')
+                    modified = original.replace(/"/g, "'")
+                    } else {
+                    modified = original
+                    }
+              p += `<p>"${elementyTakNie[i]}":"${modified}"${i === (elementyTakNie.length-1) ? "" : ','}</p>`
             } 
         }
         text += `<div>"q${numberOfQuaestions}":{${p}},</div>`
         } else {
           for (let i = 1; i < elementy.length; i++){
             original = element[elementy[i]]
-            if (original != undefined){
-            if (original.includes('"')) {
-                console.log('should replace')
-                modified = original.replace(/"/g, "'")
-                } else {
-                modified = original
+            if (element[elementy[i]] && element[elementy[i]] !== ""){
+              if(elementy[i]  === "Media"){
+                mediaArray.push(element[elementy[i]])
+              }
+                if (original.includes('"')) {
+                    console.log('should replace')
+                    modified = original.replace(/"/g, "'")
+                    } else {
+                    modified = original
+                    }
             }
-            }
-            p += `<p>"${elementy[i]}":"${modified}"${i === (elementy.length-1) ? "" : ','}</p>`
+          p += `<p>"${elementy[i]}":"${modified}"${i === (elementy.length-1) ? "" : ','}</p>`
         }
         text += `<div>"q${numberOfQuaestions}":{${p}},</div>`
         }
@@ -96,3 +105,14 @@ btnConvert.addEventListener('click',async ()=> {
         console.log('too short time')
     }
 })
+
+showMedia.addEventListener('click',async ()=> {
+
+    console.log('length ' + mediaArray.length)
+    const formated = mediaArray.map(element => {
+      return `<p>${element.slice(-3)}</p>`
+    })
+    console.log('showing media '+ formated )
+    showMedia.style="display: none"
+    converted.innerHTML = `${[...formated]}`
+  })

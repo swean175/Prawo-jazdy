@@ -5,6 +5,10 @@ const answer = document.getElementById('answer')
 const converted = document.getElementById('converted')
 let newBaza = []
 let mediaArray = []
+let text
+let show
+let original
+let modified
     
 async function fetchData() {
     try {
@@ -51,11 +55,8 @@ btnConvert.addEventListener('click',async ()=> {
     btnConvert.style="display: none"
     const elementy = ["Lp.", "Numer pytania", "Pytanie", "Odpowiedź A", "Odpowiedź B", "Odpowiedź C", "Poprawna odp", "Media", "Kategorie", "Nazwa media tłumaczenie migowe (PJM) treść płyt",  "Nazwa media tłumaczenie migowe (PJM) treść odp A",
       "Nazwa media tłumaczenie migowe (PJM) treść odp B","Nazwa media tłumaczenie migowe (PJM) treść odp C", "Pytanie [ENG]", "Odpowiedź A [ENG]", "Odpowiedź B [ENG]", "Odpowiedź C [ENG]", "Pytanie [DE]", "Odpowiedź A [DE]", "Odpowiedź B [DE]", "Odpowiedź C [DE]", "Pytanie [UA]", "Odpowiedź A [UA]", "Odpowiedź B [UA]", "Odpowiedź C [UA]"]
+
     const elementyTakNie = ["Lp.", "Numer pytania", "Pytanie", "Poprawna odp", "Media", "Kategorie", "Nazwa media tłumaczenie migowe (PJM) treść płyt","Nazwa media tłumaczenie migowe (PJM) treść odp A", "Nazwa media tłumaczenie migowe (PJM) treść odp B","Nazwa media tłumaczenie migowe (PJM) treść odp C" , "Pytanie [ENG]", "Pytanie [DE]", "Pytanie [UA]"]
-    let text
-    let show
-    let original
-    let modified
     let numberOfQuaestions = 0
     let done = await converter()
     if (done){
@@ -64,7 +65,8 @@ btnConvert.addEventListener('click',async ()=> {
         show.forEach(element => {
         numberOfQuaestions += 1
         let p = ""
-        if (element['Poprawna odp'].includes('Tak') || element['Poprawna odp'].includes('Nie')){ 
+        if (element.Media !== undefined){
+          if (element['Poprawna odp'].includes('Tak') || element['Poprawna odp'].includes('Nie')){ 
           for (let i = 1; i < elementyTakNie.length; i++){
              original = element[elementyTakNie[i]] 
             if (element[elementyTakNie[i]] != undefined && element[elementyTakNie[i]] !== ""){
@@ -85,9 +87,9 @@ btnConvert.addEventListener('click',async ()=> {
           for (let i = 1; i < elementy.length; i++){
             original = element[elementy[i]]
             if (element[elementy[i]] && element[elementy[i]] !== ""){
-              if(elementy[i]  === "Media"){
-                mediaArray.push(element[elementy[i]])
-              }
+                if(elementy[i]  === "Media"){
+                  mediaArray.push(element[elementy[i]])
+                }
                 if (original.includes('"')) {
                     console.log('should replace')
                     modified = original.replace(/"/g, "'")
@@ -99,7 +101,7 @@ btnConvert.addEventListener('click',async ()=> {
         }
         text += `<div>"q${numberOfQuaestions}":{${p}},</div>`
         }
-        })
+        }})
         converted.innerHTML = `{${text}}`
     } else {
         console.log('too short time')
@@ -109,10 +111,16 @@ btnConvert.addEventListener('click',async ()=> {
 showMedia.addEventListener('click',async ()=> {
 
     console.log('length ' + mediaArray.length)
+
+    // console.log('show.[555-3340-q452] = '+baza.pytania[554].Media)
     const formated = mediaArray.map(element => {
-      return `<p>${element.slice(-3)}</p>`
+      let style =""
+      if (element.slice(-3) !== "jpg" && element.slice(-3) !== "wmv"){
+        style = "background-color: red; color: white;"
+      }
+      return `<p style="${style}">${element.slice(-3)}</p>`
     })
-    console.log('showing media '+ formated )
+    // console.log('showing media '+ formated )
     showMedia.style="display: none"
     converted.innerHTML = `${[...formated]}`
   })

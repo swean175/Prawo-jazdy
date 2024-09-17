@@ -65,7 +65,7 @@ btnConvert.addEventListener('click',async ()=> {
         show.forEach(element => {
         numberOfQuaestions += 1
         let p = ""
-        if (element.Media !== undefined){
+  
           if (element['Poprawna odp'].includes('Tak') || element['Poprawna odp'].includes('Nie')){ 
           for (let i = 1; i < elementyTakNie.length; i++){
              original = element[elementyTakNie[i]] 
@@ -80,13 +80,15 @@ btnConvert.addEventListener('click',async ()=> {
                     modified = original
                     }
               p += `<p>"${elementyTakNie[i]}":"${modified}"${i === (elementyTakNie.length-1) ? "" : ','}</p>`
-            } 
+            } else {
+              null
+            }
         }
         text += `<div>"q${numberOfQuaestions}":{${p}},</div>`
         } else {
           for (let i = 1; i < elementy.length; i++){
             original = element[elementy[i]]
-            if (element[elementy[i]] && element[elementy[i]] !== ""){
+            if (element[elementy[i]] != undefined && element[elementy[i]] !== ""){
                 if(elementy[i]  === "Media"){
                   mediaArray.push(element[elementy[i]])
                 }
@@ -96,12 +98,14 @@ btnConvert.addEventListener('click',async ()=> {
                     } else {
                     modified = original
                     }
+            } else {
+              null
             }
           p += `<p>"${elementy[i]}":"${modified}"${i === (elementy.length-1) ? "" : ','}</p>`
         }
         text += `<div>"q${numberOfQuaestions}":{${p}},</div>`
         }
-        }})
+        })
         converted.innerHTML = `{${text}}`
     } else {
         console.log('too short time')
